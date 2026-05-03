@@ -1,5 +1,6 @@
 import time
 from typing import Sequence
+import threading
 
 SequenceInt = Sequence[int]
 
@@ -22,17 +23,21 @@ def factorize_single_print(index: int, number: int):
   print(f"Result: {dividers}")
 
 
-def main_sync():
-  for index, number in enumerate(numbers):
-    factorize_single_print(index, number)
+def main_threads():
+    tasks = []
+    for index, number in enumerate(numbers):
+        tasks.append(threading.Thread(target=factorize_single_print, args=(index, number)))
+        tasks[-1].start()
+
+    for task in tasks:
+        task.join()
 
 
 if __name__ == '__main__':
   start = time.perf_counter()
-  main_sync()
+  main_threads()
 
   end = time.perf_counter()
   duration = end - start
 
-  print(f"CPU Sync duration: {duration}") # CPU Sync duration: 3.6492278329096735
-
+  print(f"CPU Threads duration: {duration}") # CPU Threads duration: 3.1385266659781337
